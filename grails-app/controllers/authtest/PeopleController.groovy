@@ -1,7 +1,12 @@
 package authtest
 
+import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
+
+import grails.rest.*
+import grails.converters.*
+
 
 class PeopleController {
 
@@ -15,6 +20,7 @@ class PeopleController {
         respond peopleService.list(params), model:[peopleCount: peopleService.count()]
     }
 
+    @Secured('ROLE_USER')
     def show(Long id) {
         respond peopleService.get(id)
     }
