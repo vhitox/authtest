@@ -1,0 +1,7 @@
+import authtest.People
+
+model {
+	People people
+}
+
+json g.render(people, [resolveTemplate: false])
