@@ -4,58 +4,56 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
 
-import grails.rest.*
-import grails.converters.*
+class UserController {
 
-
-class PeopleController {
-
-    PeopleService peopleService
+    UserService userService
 
     static responseFormats = ['json', 'xml']
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    @Secured('ROLE_USER')
+    @Secured('IS_AUTHENTICATED_ANONYMOUSLY')
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond peopleService.list(params), model:[peopleCount: peopleService.count()]
+        respond userService.list(params), model:[userCount: userService.count()]
     }
 
-    @Secured('ROLE_USER')
     def show(Long id) {
-        respond peopleService.get(id)
+        respond userService.get(id)
     }
 
-    def save(People people) {
-        if (people == null) {
+    @Secured('IS_AUTHENTICATED_ANONYMOUSLY')
+    def save(User user) {
+        render user.username
+        render user.password        
+        if (user == null) {
             render status: NOT_FOUND
             return
         }
 
         try {
-            peopleService.save(people)
+            userService.save(user)
         } catch (ValidationException e) {
-            respond people.errors, view:'create'
+            respond user.errors, view:'create'
             return
         }
 
-        respond people, [status: CREATED, view:"show"]
+        respond user, [status: CREATED, view:"show"]
     }
 
-    def update(People people) {
-        if (people == null) {
+    def update(User user) {
+        if (user == null) {
             render status: NOT_FOUND
             return
         }
 
         try {
-            peopleService.save(people)
+            userService.save(user)
         } catch (ValidationException e) {
-            respond people.errors, view:'edit'
+            respond user.errors, view:'edit'
             return
         }
 
-        respond people, [status: OK, view:"show"]
+        respond user, [status: OK, view:"show"]
     }
 
     def delete(Long id) {
@@ -64,7 +62,7 @@ class PeopleController {
             return
         }
 
-        peopleService.delete(id)
+        userService.delete(id)
 
         render status: NO_CONTENT
     }
